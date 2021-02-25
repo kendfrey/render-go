@@ -3,7 +3,7 @@
 global_settings
 {
 	assumed_gamma 1.0
-	ambient_light 2
+	ambient_light 1
 }
 
 #include "colors.inc"
@@ -28,8 +28,26 @@ camera { Front }
 
 light_source
 {
-	<-100000, 300000, 0>
-	color White
+	<7000, 10000, -10000>
+	color 0.2
+}
+
+light_source
+{
+	<-8000, 10000, -5000>
+	color 0.2
+}
+
+light_source
+{
+	<-1000, 10000, -8000>
+	color 0.3
+}
+
+light_source
+{
+	<3000, 10000, 2000>
+	color 0.3
 }
 
 #declare BoardWidth = 424.2;
@@ -40,7 +58,7 @@ light_source
 #declare LineThickness = 1;
 #declare StarDiameter = 4;
 #declare StoneDiameter = 22.3;
-#declare StoneThickness = 8.8;
+#declare StoneThickness = 10.1;
 
 #declare TexTransform = transform
 {
@@ -115,6 +133,8 @@ light_source
 			}
 		}
 		transform { TexTransform }
+		finish { specular 0.3 roughness 0.005 }
+		normal { wrinkles 0.075 scale 2 }
 	}
 }
 
@@ -147,9 +167,15 @@ light_source
 		#end
 	#end
 
+	scale <1, 0.001, 1>
+
 	translate <0, BoardThickness, 0>
 
-	pigment { color Black }
+	texture
+	{
+		pigment { color Black }
+		finish { specular 0.2 roughness 0.001 }
+	}
 }
 
 #declare Board = difference
@@ -158,9 +184,9 @@ light_source
 	object { Engraving }
 }
 
-#declare Sharpness = pi * 0.315;
-#declare R = 19.25;
-#declare r = 1.5;
+#declare Sharpness = pi * 0.2;
+#declare R = 10;
+#declare r = 3;
 
 #declare PreThickness = (R - (R - r) * sin(Sharpness)) * 2;
 #declare PreDiameter = (r + (R - r) * cos(Sharpness)) * 2;
@@ -181,7 +207,7 @@ light_source
 #declare B = texture
 {
 	pigment { color rgb 0.02 }
-	finish { specular 0.05 roughness 0.02 }
+	finish { specular 0.1 roughness 0.015 }
 }
 
 #declare W =
@@ -191,17 +217,17 @@ texture
 	pigment
 	{
 		bozo
-		scale <0.5, 100, 100>
+		scale <1, 100, 100>
 		scale 1/1000
 		warp { turbulence 0.1 }
 		scale 1000
 		color_map
 		{
-			[0.4, rgbt <0, 0, 0.2, 1>]
-			[1, rgbt <0, 0, 0.2, 0.9>]
+			[0.5, rgbt <0, 0, 0.2, 1>]
+			[1, rgbt <0, 0, 0.2, 0.85>]
 		}
 	}
-	finish { specular 0.5 roughness 0.001 reflection 0.1 }
+	finish { specular 0.5 roughness 0.002 reflection 0.1 }
 }
 
 #include "stones.inc"
