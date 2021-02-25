@@ -3,17 +3,28 @@
 global_settings
 {
 	assumed_gamma 1.0
+	ambient_light 2
 }
 
 #include "colors.inc"
 
-camera
+#declare Front = camera
 {
 	angle 70
 	location <0, 400, 400>
 	right -x * image_width / image_height
 	look_at <0, -50, 0>
 }
+
+#declare Top = camera
+{
+	angle 100
+	location <0, 400, 0.01>
+	right -x * image_width / image_height
+	look_at <0, -50, 0>
+}
+
+camera { Front }
 
 light_source
 {
@@ -28,7 +39,7 @@ light_source
 #declare YSpacing = 23.7;
 #declare LineThickness = 1;
 #declare StarDiameter = 4;
-#declare StoneDiameter = 22.5;
+#declare StoneDiameter = 22.3;
 #declare StoneThickness = 8.8;
 
 #declare TexTransform = transform
@@ -55,7 +66,7 @@ light_source
 			color_map
 			{
 				[0 color rgbt <0.3, 0.1, 0, 0.8>]
-				[1 color rgbt <0.3, 0.1, 0, 1>]
+				[0.5 color rgbt <0.3, 0.1, 0, 1>]
 			}
 		}
 		transform { TexTransform }
@@ -70,7 +81,7 @@ light_source
 			color_map
 			{
 				[0 color rgbt <0.3, 0, 0, 0.8>]
-				[1 color rgbt <0.3, 0, 0, 1>]
+				[0.5 color rgbt <0.3, 0, 0, 1>]
 			}
 		}
 		transform { TexTransform }
@@ -85,7 +96,7 @@ light_source
 			color_map
 			{
 				[0 color rgbt <0.3, 0.2, 0, 0.8>]
-				[1 color rgbt <0.3, 0.2, 0, 1>]
+				[0.5 color rgbt <0.3, 0.2, 0, 1>]
 			}
 		}
 		transform { TexTransform }
@@ -100,7 +111,7 @@ light_source
 			color_map
 			{
 				[0 color rgbt <0.3, 0.2, 0, 0.8>]
-				[1 color rgbt <0.3, 0.2, 0, 1>]
+				[0.5 color rgbt <0.3, 0.2, 0, 1>]
 			}
 		}
 		transform { TexTransform }
@@ -169,8 +180,8 @@ light_source
 
 #declare B = texture
 {
-	pigment { color rgb 0.03 }
-	finish { specular 0.1 roughness 0.05 }
+	pigment { color rgb 0.02 }
+	finish { specular 0.05 roughness 0.02 }
 }
 
 #declare W =

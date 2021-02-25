@@ -3,7 +3,11 @@
 // Change these parameters to adjust the result.
 const startMove = 0;
 const endMove = 1000;
-const movesPerFrame = 10;
+const movesPerFrame = 1;
+const sloppiness = 1.5;
+const xSpacing = 22;
+const ySpacing = 23.7;
+const stoneDiameter = 22.3;
 const renderer = "C:\\Program Files\\POV-Ray\\v3.7\\bin\\pvengine64";
 
 const { spawn } = require("child_process");
@@ -48,13 +52,111 @@ spawn(renderer, ["/RENDER", "goban.ini"]);
 
 function play(c, x, y)
 {
-	const [nx, ny] = boxMuller(1);
+	const [nx, ny] = boxMuller(sloppiness);
 	board[x][y] = { c: c, x: nx, y: ny };
+
+	nudge(x, y);
 
 	checkCapture(x - 1, y);
 	checkCapture(x + 1, y);
 	checkCapture(x, y - 1);
 	checkCapture(x, y + 1);
+}
+
+function nudge(x, y)
+{
+	const [dx1, dy1] = getNudge(x, y, x - 1, y);
+	const [dx2, dy2] = getNudge(x, y, x + 1, y);
+	const [dx3, dy3] = getNudge(x, y, x, y - 1);
+	const [dx4, dy4] = getNudge(x, y, x, y + 1);
+
+	board[x][y].x += (dx1 + dx2 + dx3 + dx4) / 2;
+	board[x][y].y += (dy1 + dy2 + dy3 + dy4) / 2;
+
+	for (let ix = x - 1; ix >= 0; ix--)
+	{
+		chainNudge(ix, y, [[1, 0]]);
+	}
+	for (let ix = x + 1; ix < 19; ix++)
+	{
+		chainNudge(ix, y, [[-1, 0]]);
+	}
+	for (let iy = y - 1; iy >= 0; iy--)
+	{
+		chainNudge(x, iy, [[0, 1]]);
+	}
+	for (let iy = y + 1; iy < 19; iy++)
+	{
+		chainNudge(x, iy, [[0, -1]]);
+	}
+
+	for (let ix = x - 1; ix >= 0; ix--)
+	{
+		for (let iy = y - 1; iy >= 0; iy--)
+		{
+			chainNudge(ix, iy, [[1, 0], [0, 1]]);
+		}
+		for (let iy = y + 1; iy < 19; iy++)
+		{
+			chainNudge(ix, iy, [[1, 0], [0, -1]]);
+		}
+	}
+	for (let ix = x + 1; ix < 19; ix++)
+	{
+		for (let iy = y - 1; iy >= 0; iy--)
+		{
+			chainNudge(ix, iy, [[-1, 0], [0, 1]]);
+		}
+		for (let iy = y + 1; iy < 19; iy++)
+		{
+			chainNudge(ix, iy, [[-1, 0], [0, -1]]);
+		}
+	}
+}
+
+function chainNudge(x, y, dirs)
+{
+	if (board[x][y] === undefined)
+		return;
+
+	let collided;
+
+	do
+	{
+		collided = false;
+		for (const [dirX, dirY] of dirs)
+		{
+			const [dx, dy] = getNudge(x, y, x + dirX, y + dirY);
+			
+			if (dx === 0 && dy === 0)
+				continue;
+
+			collided = true;
+			board[x][y].x += dx;
+			board[x][y].y += dy;
+		}
+	}
+	while (collided);
+}
+
+function getNudge(x1, y1, x2, y2)
+{
+	if (x2 >= 0 && x2 < 19 && y2 >= 0 && y2 < 19 && board[x2][y2])
+	{
+		const dx = board[x1][y1].x - board[x2][y2].x + (x1 - x2) * xSpacing;
+		const dy = board[x1][y1].y - board[x2][y2].y + (y1 - y2) * ySpacing;
+		const r = Math.sqrt(dx ** 2 + dy ** 2);
+
+		if (r >= stoneDiameter)
+			return [0, 0];
+			
+		const factor = (stoneDiameter + 0.001) / r - 1;
+		return [dx * factor, dy * factor];
+	}
+	else
+	{
+		return [0, 0];
+	}
 }
 
 function checkCapture(x, y)
